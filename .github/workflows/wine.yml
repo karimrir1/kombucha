@@ -40,17 +40,30 @@ jobs:
           build-essential \
           binutils \
           ccache \
+          gcc-mingw-w64-x86-64 \
           gettext \
           libasound2-dev \
+          libavcodec-dev \
+          libavformat-dev \
+          libcapi20-dev \
+          libcups2-dev \
           libfontconfig-dev \
           libfreetype-dev \
           libgl-dev \
           libgnutls28-dev \
+          libgphoto2-dev \
+          libgstreamer1.0-dev \
+          libgstreamer-plugins-base1.0-dev \
+          libkrb5-dev \
+          libpcap-dev \
+          libpcsclite-dev \
           libpulse-dev \
-          libusb-1.0-0-dev \
           libudev-dev \
-          libsdl2-dev \
           libunwind-dev \
+          libusb-1.0-0-dev \
+          libsane-dev \
+          libsdl2-dev \
+          libv4l-dev \
           libvulkan-dev \
           libwayland-dev \
           libx11-dev \
@@ -63,7 +76,8 @@ jobs:
           libxkbregistry-dev \
           libxrandr-dev \
           libxrender-dev \
-          mingw-w64
+          ocl-icd-opencl-dev \
+          samba-dev
 
     - name: Configure ccache
       uses: hendrikmuhs/ccache-action@v1.2
@@ -77,56 +91,13 @@ jobs:
         ./configure \
           CC='ccache gcc' \
           x86_64_CC='ccache x86_64-w64-mingw32-gcc' \
-          --prefix=${{ env.INSTALL }} \
+          --build=x86_64 \
+          --disable-tests \
+          --disable-win16 \
           --enable-win64 \
           --host=x86_64 \
-          --build=x86_64 \
-          --with-mingw=ccache x86_64-w64-mingw64-gcc \
-          --disable-win16 \
-          --disable-tests \
-          --without-capi \
-          --without-coreaudio \
-          --without-cups \
-          --without-dbus \
-          --without-ffmpeg \
-          --without-gphoto \
-          --without-gssapi \
-          --without-gstreamer \
-          --without-hwloc \
-          --without-inotify \
-          --without-krb5 \
-          --without-netapi \
-          --without-opencl \
-          --without-oss \
-          --without-pcap \
-          --without-pcsclite \
-          --without-sane \
-          --without-v4l2 \
-          --without-xinerama \
-          --without-xxf86vm \
-          --with-alsa \
-          --with-fontconfig \
-          --with-freetype \
-          --with-gettext \
-          --with-gnutls \
-          --with-opengl \
-          --with-pthread \
-          --with-pulse \
-          --with-sdl \
-          --with-udev \
-          --with-usb \
-          --with-unwind \
-          --with-vulkan \
-          --with-wayland \
-          --with-x \
-          --with-xcomposite \
-          --with-xfixes \
-          --with-xinput \
-          --with-xinput2 \
-          --with-xrandr \
-          --with-xrender \
-          --with-xshape \
-          --with-xshm
+          --prefix=${{ env.INSTALL }} \
+          --with-mingw=ccache x86_64-w64-mingw64-gcc
 
     - name: Build Wine
       working-directory: wine
