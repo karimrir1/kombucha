@@ -1,7 +1,7 @@
-From 90937c537eb7cf03b96c8a89babaf03c71e6cec8 Mon Sep 17 00:00:00 2001
+From 971579517757bb3ed257202995b9a0a1e5e8de1f Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?R=C3=A9mi=20Bernon?= <rbernon@codeweavers.com>
 Date: Fri, 12 Mar 2021 00:10:49 +0100
-Subject: [PATCH 16/22] winex11: Move Xfixes extension query to process_attach.
+Subject: [PATCH 12/18] winex11: Move Xfixes extension query to process_attach.
 
 Signed-off-by: sewn <sewn@disroot.org>
 ---
@@ -234,5 +234,5 @@ index 0000000..f3beea5
 +
 +#endif /* __WINE_XFIXES_H */
 -- 
-2.52.0
+2.53.0
 

@@ -1,15 +1,15 @@
-From 388b8aeceb87c9c9db257f8898b1c716f9f3c805 Mon Sep 17 00:00:00 2001
+From ee931af80990949274ad0414f83b4b859de2236b Mon Sep 17 00:00:00 2001
 From: effectsbot <eff3ctsb0t@gmail.com>
-Date: Tue, 3 Feb 2026 13:21:06 +0100
-Subject: [PATCH 22/22] wine.inf: Add Kombucha-specific registry overrides
+Date: Sun, 8 Feb 2026 00:30:30 +0100
+Subject: [PATCH 18/18] wine.inf: Add Kombucha-specific registry overrides
 
 Signed-off-by: effectsbot <eff3ctsb0t@gmail.com>
 ---
- loader/wine.inf.in | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ loader/wine.inf.in | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
 diff --git a/loader/wine.inf.in b/loader/wine.inf.in
-index da23557..d4cd629 100644
+index da23557..3632f42 100644
 --- a/loader/wine.inf.in
 +++ b/loader/wine.inf.in
 @@ -63,6 +63,7 @@ AddReg=\
@@ -20,7 +20,7 @@ index da23557..d4cd629 100644
      LicenseInformation,\
      MCI,\
      Misc,\
-@@ -1326,3 +1327,29 @@ InfFiles  = 17
+@@ -1326,3 +1327,25 @@ InfFiles  = 17
  NlsFiles  = 11
  SortFiles = 10,globalization\sorting
  WinmdFiles = 11,winmetadata
@@ -29,12 +29,7 @@ index da23557..d4cd629 100644
 +;; Global overrides
 +HKCU,Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers,"",,"~ HIGHDPIAWARE"
 +HKCU,Software\Wine\DllOverrides,"concrt140",,"native,builtin"
-+HKCU,Software\Wine\DllOverrides,"d3d8",,"native,builtin"
-+HKCU,Software\Wine\DllOverrides,"d3d9",,"native,builtin"
-+HKCU,Software\Wine\DllOverrides,"d3d10core",,"native,builtin"
-+HKCU,Software\Wine\DllOverrides,"d3d11",,"native,builtin"
 +HKCU,Software\Wine\DllOverrides,"d3dcompiler_47",,"native,builtin"
-+HKCU,Software\Wine\DllOverrides,"dxgi",,"native,builtin"
 +HKCU,Software\Wine\DllOverrides,"msvcp140",,"native,builtin"
 +HKCU,Software\Wine\DllOverrides,"msvcp140_1",,"native,builtin"
 +HKCU,Software\Wine\DllOverrides,"msvcp140_2",,"native,builtin"
@@ -42,6 +37,7 @@ index da23557..d4cd629 100644
 +HKCU,Software\Wine\DllOverrides,"vccorlib140",,"native,builtin"
 +HKCU,Software\Wine\DllOverrides,"vcruntime140",,"native,builtin"
 +HKCU,Software\Wine\DllOverrides,"vcruntime140_1",,"native,builtin"
++HKCU,Software\Wine\DllOverrides,"vulkan-1",,"native,builtin"
 +;; App-specific overrides
 +HKCU,Software\Wine\Fonts\Replacements,"Arial",,"Liberation Sans"
 +HKCU,Software\Wine\AppDefaults\msedgewebview2.exe,"Version",,"win8"
@@ -51,5 +47,5 @@ index da23557..d4cd629 100644
 +HKCU,Software\Wine\AppDefaults\msedgewebview2.exe\DllOverrides,"d3d11",,"builtin"
 +HKCU,Software\Wine\AppDefaults\msedgewebview2.exe\DllOverrides,"dxgi",,"builtin"
 -- 
-2.52.0
+2.53.0
 

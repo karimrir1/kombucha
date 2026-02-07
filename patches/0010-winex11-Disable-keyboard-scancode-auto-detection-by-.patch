@@ -1,7 +1,7 @@
-From a67c71e749901f2b48d999f0fb94c18da5cc709d Mon Sep 17 00:00:00 2001
+From 87693196ae84b3a4aa77875672a436bcc2bbdb4c Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?R=C3=A9mi=20Bernon?= <rbernon@codeweavers.com>
 Date: Fri, 6 Jan 2023 11:31:36 +0100
-Subject: [PATCH 14/22] winex11: Disable keyboard scancode auto-detection by
+Subject: [PATCH 10/18] winex11: Disable keyboard scancode auto-detection by
  default.
 
 Wine-Bug: https://bugs.winehq.org/show_bug.cgi?id=30984
@@ -38,5 +38,5 @@ index a9d83b4..3ee20d4 100644
      else CheckDlgButton( dialog, IDC_KEYBOARD_SCANCODE_DETECT, BST_UNCHECKED );
      free( buffer );
 -- 
-2.52.0
+2.53.0
 

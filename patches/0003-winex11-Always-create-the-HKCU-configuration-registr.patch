@@ -1,7 +1,7 @@
-From 853d270478b0f6845f9bf71ea5c9f30168ef551c Mon Sep 17 00:00:00 2001
+From ba1a2fb585eb1249a2d2423a0ecf43e9f17793e5 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?R=C3=A9mi=20Bernon?= <rbernon@codeweavers.com>
 Date: Fri, 6 Jan 2023 11:22:10 +0100
-Subject: [PATCH 07/22] winex11: Always create the HKCU configuration registry
+Subject: [PATCH 03/18] winex11: Always create the HKCU configuration registry
  key.
 
 Wine-Bug: https://bugs.winehq.org/show_bug.cgi?id=30984
@@ -107,5 +107,5 @@ index 0b8eeda..5930ce6 100644
      /* open the app-specific key */
  
 -- 
-2.52.0
+2.53.0
 
