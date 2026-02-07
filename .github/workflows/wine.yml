@@ -7,7 +7,7 @@ env:
   WINE_VERSION: "11.0"
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - name: Install dependencies
       run: |
@@ -19,7 +19,7 @@ jobs:
 
     - name: Fetch sources
       run: |
-        echo "TAG=${{ env.WINE_VERSION }}+$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+        echo "TAG=${{ env.WINE_VERSION }}+$(date --utc +%Y%m%d%H%M)" >> $GITHUB_ENV
 
         git clone https://gitlab.winehq.org/wine/wine.git --depth 1 \
           --branch wine-${{ env.WINE_VERSION }}
@@ -32,8 +32,6 @@ jobs:
 
     - name: Install build dependencies
       run: |
-        echo "PATH=/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH" >> $GITHUB_ENV
-
         sudo apt update -y
         sudo apt install \
           autoconf \
@@ -86,18 +84,17 @@ jobs:
       working-directory: wine
       run: |
         export CFLAGS='-O2 -ftree-vectorize -pipe -march=x86-64-v2 -mpclmul -msse4.2 -floop-nest-optimize -fgraphite-identity'
-        export CROSSCFLAGS="$CFLAGS"
+        export x86_64_CFLAGS="$CFLAGS"
         mkdir -p ${{ env.INSTALL }}
         ./configure \
           CC='ccache gcc' \
           x86_64_CC='ccache x86_64-w64-mingw32-gcc' \
-          --build=x86_64 \
           --disable-tests \
           --disable-win16 \
-          --enable-win64 \
-          --host=x86_64 \
+          --enable-archs=x86_64 \
           --prefix=${{ env.INSTALL }} \
-          --with-mingw=ccache x86_64-w64-mingw64-gcc
+          --with-mingw \
+          --without-oss
 
     - name: Build Wine
       working-directory: wine
