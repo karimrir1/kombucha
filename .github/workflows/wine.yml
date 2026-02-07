@@ -4,7 +4,7 @@ permissions:
   contents: write
   pull-requests: read
 env:
-  WINE_VERSION: "11.0"
+  WINE_VERSION: "nightly"
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -21,8 +21,7 @@ jobs:
       run: |
         echo "TAG=${{ env.WINE_VERSION }}+$(date --utc +%Y%m%d%H%M)" >> $GITHUB_ENV
 
-        git clone https://gitlab.winehq.org/wine/wine.git --depth 1 \
-          --branch wine-${{ env.WINE_VERSION }}
+        git clone https://gitlab.winehq.org/wine/wine.git --depth 1
 
     - name: Apply patches
       run: |
