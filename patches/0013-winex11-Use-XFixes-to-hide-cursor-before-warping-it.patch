@@ -1,4 +1,4 @@
-From 8ab17669adf52a673c04a4e5ba407130fcc5e3c2 Mon Sep 17 00:00:00 2001
+From d0054bfec3d8902aaf6807f8f40815f7c67529e9 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?R=C3=A9mi=20Bernon?= <rbernon@codeweavers.com>
 Date: Tue, 25 Jul 2023 10:38:35 +0200
 Subject: [PATCH 13/17] winex11: Use XFixes to hide cursor before warping it.

@@ -1,4 +1,4 @@
-From 54bf3034d4c5bdbc9a89ca226fde18180ffa189a Mon Sep 17 00:00:00 2001
+From 60802b7dfd70f9a2f910ec2a75b3fc480f5b5598 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?R=C3=A9mi=20Bernon?= <rbernon@codeweavers.com>
 Date: Fri, 6 Jan 2023 08:15:41 +0100
 Subject: [PATCH 05/17] winecfg: Add a keyboard layout selection config option.

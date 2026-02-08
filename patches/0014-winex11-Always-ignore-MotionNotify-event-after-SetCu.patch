@@ -1,4 +1,4 @@
-From 6bb53f93f52390f116e197c85ff0ed1cd1419df5 Mon Sep 17 00:00:00 2001
+From 95cf8e7545628647b617f3278023eeb14308aad3 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?R=C3=A9mi=20Bernon?= <rbernon@codeweavers.com>
 Date: Fri, 8 Sep 2023 14:24:11 +0200
 Subject: [PATCH 14/17] winex11: Always ignore MotionNotify event after
