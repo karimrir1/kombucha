@@ -1,4 +1,4 @@
-From f0c5be3f49f2687edb041f8ed9135ca816d2a96e Mon Sep 17 00:00:00 2001
+From 0371e2aa1741ec06573f2fffa35ad5421a9209f3 Mon Sep 17 00:00:00 2001
 From: sewn <sewn@disroot.org>
 Date: Thu, 25 Dec 2025 21:32:39 +0300
 Subject: [PATCH 15/17] winedbg: Disable

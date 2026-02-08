@@ -1,4 +1,4 @@
-From a67554658b6fce22e097f500b35effcf0ce86e3f Mon Sep 17 00:00:00 2001
+From 31218c65ec6bf12016c9db99aaac80ec53906e04 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?R=C3=A9mi=20Bernon?= <rbernon@codeweavers.com>
 Date: Thu, 5 Jan 2023 21:16:38 +0100
 Subject: [PATCH 02/17] winecfg: Move input config options to a dedicated tab.
