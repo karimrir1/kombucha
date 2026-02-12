@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-    - name: Install dependencies
+    - name: Install dependencies 
       run: |
         sudo wget -O /usr/include/linux/ntsync.h https://raw.githubusercontent.com/torvalds/linux/refs/tags/v6.18/include/uapi/linux/ntsync.h
         sudo wget -O /usr/include/linux/userfaultfd.h https://raw.githubusercontent.com/torvalds/linux/refs/tags/v6.18/include/uapi/linux/userfaultfd.h
