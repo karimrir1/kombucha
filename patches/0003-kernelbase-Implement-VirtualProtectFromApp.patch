@@ -1,7 +1,7 @@
-From 8b886f8908384a7905495dfe27b7de1bccc25fb7 Mon Sep 17 00:00:00 2001
+From 40de7b551a195a27824788afcff7613b6c046660 Mon Sep 17 00:00:00 2001
 From: Kareem Aladli <karimri@protonmail.com>
 Date: Sun, 13 Jul 2025 00:15:41 +0300
-Subject: [PATCH 02/11] kernelbase: Implement VirtualProtectFromApp.
+Subject: [PATCH 03/12] kernelbase: Implement VirtualProtectFromApp.
 
 Wine-Bug: https://bugs.winehq.org/show_bug.cgi?id=58482
 Signed-off-by: Kareem Aladli <karimri@protonmail.com>
@@ -12,7 +12,7 @@ Signed-off-by: Kareem Aladli <karimri@protonmail.com>
  3 files changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/dlls/kernelbase/kernelbase.spec b/dlls/kernelbase/kernelbase.spec
-index 14c4e19..759daec 100644
+index 14c4e19cb43..759daec0728 100644
 --- a/dlls/kernelbase/kernelbase.spec
 +++ b/dlls/kernelbase/kernelbase.spec
 @@ -1728,7 +1728,7 @@
@@ -25,7 +25,7 @@ index 14c4e19..759daec 100644
  @ stdcall VirtualQueryEx(long ptr ptr long)
  @ stdcall VirtualUnlock(ptr long)
 diff --git a/dlls/kernelbase/memory.c b/dlls/kernelbase/memory.c
-index e102345..f971aac 100644
+index e102345119a..f971aac6245 100644
 --- a/dlls/kernelbase/memory.c
 +++ b/dlls/kernelbase/memory.c
 @@ -592,6 +592,15 @@ BOOL WINAPI DECLSPEC_HOTPATCH VirtualProtectEx( HANDLE process, void *addr, SIZE
@@ -45,7 +45,7 @@ index e102345..f971aac 100644
  /***********************************************************************
   *             VirtualQuery   (kernelbase.@)
 diff --git a/include/winbase.h b/include/winbase.h
-index 172a921..a26484a 100644
+index 172a921c3b2..a26484a13cb 100644
 --- a/include/winbase.h
 +++ b/include/winbase.h
 @@ -2837,6 +2837,7 @@ WINBASEAPI BOOL        WINAPI VirtualFreeEx(HANDLE,LPVOID,SIZE_T,DWORD);

@@ -1,7 +1,7 @@
-From 39f53743fb4a2db62b64638f76c1b138302f774f Mon Sep 17 00:00:00 2001
+From 224d51469ceb9fe71727930508816fe797034451 Mon Sep 17 00:00:00 2001
 From: Elizabeth Figura <zfigura@codeweavers.com>
 Date: Wed, 2 Jul 2025 22:35:32 -0400
-Subject: [PATCH 06/11] ntdll: Retrieve and cache an ntsync device in wait
+Subject: [PATCH 07/12] ntdll: Retrieve and cache an ntsync device in wait
  calls.
 
 ---
@@ -19,7 +19,7 @@ Subject: [PATCH 06/11] ntdll: Retrieve and cache an ntsync device in wait
  create mode 100644 server/inproc_sync.c
 
 diff --git a/dlls/ntdll/unix/esync.h b/dlls/ntdll/unix/esync.h
-index 59f8809..882c26c 100644
+index 59f8809fc1a..882c26c1342 100644
 --- a/dlls/ntdll/unix/esync.h
 +++ b/dlls/ntdll/unix/esync.h
 @@ -55,7 +55,10 @@ extern NTSTATUS esync_signal_and_wait( HANDLE signal, HANDLE wait, BOOLEAN alert
@@ -36,7 +36,7 @@ index 59f8809..882c26c 100644
  
  extern int receive_fd( obj_handle_t *handle );
 diff --git a/dlls/ntdll/unix/fsync.h b/dlls/ntdll/unix/fsync.h
-index 6005c0f..7f19387 100644
+index 6005c0fa322..7f193871048 100644
 --- a/dlls/ntdll/unix/fsync.h
 +++ b/dlls/ntdll/unix/fsync.h
 @@ -50,5 +50,8 @@ extern NTSTATUS fsync_signal_and_wait( HANDLE signal, HANDLE wait,
@@ -51,7 +51,7 @@ index 6005c0f..7f19387 100644
 + */
 +/* extern pthread_mutex_t fd_cache_mutex; */
 diff --git a/dlls/ntdll/unix/sync.c b/dlls/ntdll/unix/sync.c
-index a751ec7..0a73d7d 100644
+index a751ec75dda..0a73d7df6a6 100644
 --- a/dlls/ntdll/unix/sync.c
 +++ b/dlls/ntdll/unix/sync.c
 @@ -57,6 +57,9 @@
@@ -191,10 +191,10 @@ index a751ec7..0a73d7d 100644
  /******************************************************************************
   *              NtCreateSemaphore (NTDLL.@)
 diff --git a/dlls/ntdll/unix/unix_private.h b/dlls/ntdll/unix/unix_private.h
-index 2d3a591..c41a14a 100644
+index dc0a8c3b368..f090b2d27d2 100644
 --- a/dlls/ntdll/unix/unix_private.h
 +++ b/dlls/ntdll/unix/unix_private.h
-@@ -222,6 +222,8 @@ extern NTSTATUS load_start_exe( WCHAR **image, void **module );
+@@ -221,6 +221,8 @@ extern NTSTATUS load_start_exe( WCHAR **image, void **module );
  extern ULONG_PTR redirect_arm64ec_rva( void *module, ULONG_PTR rva, const IMAGE_ARM64EC_METADATA *metadata );
  extern void start_server( BOOL debug );
  
@@ -204,7 +204,7 @@ index 2d3a591..c41a14a 100644
  extern void server_enter_uninterrupted_section( pthread_mutex_t *mutex, sigset_t *sigset );
  extern void server_leave_uninterrupted_section( pthread_mutex_t *mutex, sigset_t *sigset );
 diff --git a/include/wine/server_protocol.h b/include/wine/server_protocol.h
-index a39ab12..39d0e6e 100644
+index a39ab123970..39d0e6e4e5f 100644
 --- a/include/wine/server_protocol.h
 +++ b/include/wine/server_protocol.h
 @@ -127,7 +127,7 @@ struct context_data
@@ -762,7 +762,7 @@ index a39ab12..39d0e6e 100644
  
  #endif /* __WINE_WINE_SERVER_PROTOCOL_H */
 diff --git a/server/Makefile.in b/server/Makefile.in
-index 4e2008a..6866b84 100644
+index 4e2008a761f..6866b847b46 100644
 --- a/server/Makefile.in
 +++ b/server/Makefile.in
 @@ -18,6 +18,7 @@ SOURCES = \
@@ -775,7 +775,7 @@ index 4e2008a..6866b84 100644
  	main.c \
 diff --git a/server/inproc_sync.c b/server/inproc_sync.c
 new file mode 100644
-index 0000000..47b2c4d
+index 00000000000..47b2c4d44a2
 --- /dev/null
 +++ b/server/inproc_sync.c
 @@ -0,0 +1,72 @@
@@ -852,7 +852,7 @@ index 0000000..47b2c4d
 +    #endif
 +}
 diff --git a/server/protocol.def b/server/protocol.def
-index 1f2f0dc..6a48db6 100644
+index 1f2f0dc20a5..6a48db65749 100644
 --- a/server/protocol.def
 +++ b/server/protocol.def
 @@ -4255,3 +4255,7 @@ enum fsync_type
@@ -864,7 +864,7 @@ index 1f2f0dc..6a48db6 100644
 +@REQ(get_linux_sync_device)
 +@END
 diff --git a/server/request_handlers.h b/server/request_handlers.h
-index fd39842..30e6ee2 100644
+index fd39842df56..30e6ee25bc9 100644
 --- a/server/request_handlers.h
 +++ b/server/request_handlers.h
 @@ -97,6 +97,7 @@ DECL_HANDLER(create_key);
@@ -1133,7 +1133,7 @@ index fd39842..30e6ee2 100644
 +C_ASSERT( sizeof(struct fsync_free_shm_idx_reply) == 8 );
 +C_ASSERT( sizeof(struct get_linux_sync_device_request) == 16 );
 diff --git a/server/request_trace.h b/server/request_trace.h
-index 6e38f2a..8de40b1 100644
+index 6e38f2a8379..8de40b18686 100644
 --- a/server/request_trace.h
 +++ b/server/request_trace.h
 @@ -22,9 +22,11 @@ static void dump_varargs_apc_call( const char *prefix, data_size_t size );

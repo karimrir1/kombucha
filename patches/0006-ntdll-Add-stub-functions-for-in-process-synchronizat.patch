@@ -1,7 +1,7 @@
-From e4fcf914196dc08367b26dbefa271f6532cbf87a Mon Sep 17 00:00:00 2001
+From bfac1500dfd5e20d6e5146fcbca8aedcddd8742f Mon Sep 17 00:00:00 2001
 From: Elizabeth Figura <zfigura@codeweavers.com>
 Date: Wed, 2 Jul 2025 21:08:28 -0400
-Subject: [PATCH 05/11] ntdll: Add stub functions for in-process
+Subject: [PATCH 06/12] ntdll: Add stub functions for in-process
  synchronization.
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 05/11] ntdll: Add stub functions for in-process
  1 file changed, 98 insertions(+), 2 deletions(-)
 
 diff --git a/dlls/ntdll/unix/sync.c b/dlls/ntdll/unix/sync.c
-index 26a4d5d..a751ec7 100644
+index 26a4d5dba68..a751ec75dda 100644
 --- a/dlls/ntdll/unix/sync.c
 +++ b/dlls/ntdll/unix/sync.c
 @@ -302,6 +302,59 @@ static unsigned int validate_open_object_attributes( const OBJECT_ATTRIBUTES *at

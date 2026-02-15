@@ -1,7 +1,7 @@
-From 42667f64d1fdeaa3e9a47b57ad45d825588a8166 Mon Sep 17 00:00:00 2001
+From 6808606c2dfe34d4fcd234c294cd2e062e04c792 Mon Sep 17 00:00:00 2001
 From: Elizabeth Figura <zfigura@codeweavers.com>
 Date: Wed, 9 Jul 2025 12:06:51 -0400
-Subject: [PATCH 09/11] Finish up ntsync console implementation
+Subject: [PATCH 10/12] Finish up ntsync console implementation
 
 ---
  server/console.c | 207 ++++++++++++++++++++++++++++++++++-------------
@@ -9,7 +9,7 @@ Subject: [PATCH 09/11] Finish up ntsync console implementation
  2 files changed, 150 insertions(+), 59 deletions(-)
 
 diff --git a/server/console.c b/server/console.c
-index de5bc94..fe5391a 100644
+index de5bc946e9b..fe5391aabb6 100644
 --- a/server/console.c
 +++ b/server/console.c
 @@ -64,6 +64,9 @@ struct console
@@ -453,7 +453,7 @@ index de5bc94..fe5391a 100644
  
      if (req->read)
 diff --git a/server/main.c b/server/main.c
-index 7d45a09..40ca3fe 100644
+index 7d45a09e9cc..40ca3fee80e 100644
 --- a/server/main.c
 +++ b/server/main.c
 @@ -233,7 +233,7 @@ int main( int argc, char *argv[] )

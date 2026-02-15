@@ -1,7 +1,7 @@
-From 040c65325631d3e5faac16919b60ffd8bc8e0c3e Mon Sep 17 00:00:00 2001
+From 26d002cf3c06deead2c38ef1f9597f459c20d69d Mon Sep 17 00:00:00 2001
 From: effectsbot <eff3ctsb0t@gmail.com>
 Date: Sun, 15 Feb 2026 12:22:10 +0100
-Subject: [PATCH 10/11] wine.inf: Disable unused services
+Subject: [PATCH 11/12] wine.inf: Disable unused services
 
 Signed-off-by: effectsbot <eff3ctsb0t@gmail.com>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: effectsbot <eff3ctsb0t@gmail.com>
  1 file changed, 3 deletions(-)
 
 diff --git a/loader/wine.inf.in b/loader/wine.inf.in
-index 24a7cc5..23bb51b 100644
+index 24a7cc57d68..23bb51b2053 100644
 --- a/loader/wine.inf.in
 +++ b/loader/wine.inf.in
 @@ -2653,7 +2653,6 @@ StartType=3

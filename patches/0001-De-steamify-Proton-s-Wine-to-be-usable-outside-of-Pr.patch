@@ -1,7 +1,7 @@
-From 6b945090dffaa667b5577d3dcd1a1e9e23b940c8 Mon Sep 17 00:00:00 2001
+From 85cc8dca7e44bd2970bb7991d80a101f5ca9de90 Mon Sep 17 00:00:00 2001
 From: effectsbot <eff3ctsb0t@gmail.com>
 Date: Sun, 15 Feb 2026 12:03:36 +0100
-Subject: [PATCH 01/11] De-steamify Proton's Wine to be usable outside of
+Subject: [PATCH 01/12] De-steamify Proton's Wine to be usable outside of
  Proton
 
 Based on the Proton-GE patch by loathingKernel.
@@ -27,7 +27,7 @@ Signed-off-by: effectsbot <eff3ctsb0t@gmail.com>
  16 files changed, 268 insertions(+), 453 deletions(-)
 
 diff --git a/dlls/advapi32/advapi.c b/dlls/advapi32/advapi.c
-index 127cec5..2284e92 100644
+index 127cec57252..2284e92b263 100644
 --- a/dlls/advapi32/advapi.c
 +++ b/dlls/advapi32/advapi.c
 @@ -44,15 +44,14 @@ WINE_DEFAULT_DEBUG_CHANNEL(advapi);
@@ -79,7 +79,7 @@ index 127cec5..2284e92 100644
  
  /******************************************************************************
 diff --git a/dlls/kernelbase/process.c b/dlls/kernelbase/process.c
-index dd07c07..fe48599 100644
+index dd07c075c10..fe48599a498 100644
 --- a/dlls/kernelbase/process.c
 +++ b/dlls/kernelbase/process.c
 @@ -1341,21 +1341,6 @@ HANDLE WINAPI DECLSPEC_HOTPATCH OpenProcess( DWORD access, BOOL inherit, DWORD i
@@ -105,7 +105,7 @@ index dd07c07..fe48599 100644
      cid.UniqueThread  = 0;
  
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
-index b0fb554..639b056 100644
+index b0fb554d2bb..639b05677c6 100644
 --- a/dlls/ntdll/loader.c
 +++ b/dlls/ntdll/loader.c
 @@ -87,7 +87,7 @@ const WCHAR windows_dir[] = L"C:\\windows";
@@ -213,7 +213,7 @@ index b0fb554..639b056 100644
  
      if (!(flags & LDR_DONT_RESOLVE_REFS) &&
 diff --git a/dlls/ntdll/unix/loader.c b/dlls/ntdll/unix/loader.c
-index 087ca83..00d5ae1 100644
+index 087ca830251..00d5ae1c0ed 100644
 --- a/dlls/ntdll/unix/loader.c
 +++ b/dlls/ntdll/unix/loader.c
 @@ -629,47 +629,11 @@ NTSTATUS exec_wineloader( char **argv, int socketfd, const struct pe_image_info
@@ -281,7 +281,7 @@ index 087ca83..00d5ae1 100644
      wow64_debugstr_pc,
  };
 diff --git a/dlls/ntdll/unix/signal_i386.c b/dlls/ntdll/unix/signal_i386.c
-index 817a839..b6d0f24 100644
+index 817a8397cd7..b6d0f24b366 100644
 --- a/dlls/ntdll/unix/signal_i386.c
 +++ b/dlls/ntdll/unix/signal_i386.c
 @@ -1980,7 +1980,6 @@ static void segv_handler( int signal, siginfo_t *siginfo, void *sigcontext )
@@ -306,7 +306,7 @@ index 817a839..b6d0f24 100644
          rec.ExceptionInformation[0] = (ERROR_sig(ucontext) >> 1) & 0x09;
          rec.ExceptionInformation[1] = (ULONG_PTR)siginfo->si_addr;
 diff --git a/dlls/ntdll/unix/signal_x86_64.c b/dlls/ntdll/unix/signal_x86_64.c
-index 716600b..e88a29d 100644
+index 716600b773e..e88a29ddc8f 100644
 --- a/dlls/ntdll/unix/signal_x86_64.c
 +++ b/dlls/ntdll/unix/signal_x86_64.c
 @@ -2358,7 +2358,6 @@ static void segv_handler( int signal, siginfo_t *siginfo, void *sigcontext )
@@ -331,7 +331,7 @@ index 716600b..e88a29d 100644
          rec.ExceptionInformation[0] = (ERROR_sig(ucontext) >> 1) & 0x09;
          rec.ExceptionInformation[1] = (ULONG_PTR)siginfo->si_addr;
 diff --git a/dlls/ntdll/unix/unix_private.h b/dlls/ntdll/unix/unix_private.h
-index 8184f26..2d3a591 100644
+index 8184f26c08c..2d3a591bc68 100644
 --- a/dlls/ntdll/unix/unix_private.h
 +++ b/dlls/ntdll/unix/unix_private.h
 @@ -284,7 +284,6 @@ extern unsigned int alloc_object_attributes( const OBJECT_ATTRIBUTES *attr, stru
@@ -343,7 +343,7 @@ index 8184f26..2d3a591 100644
  extern void *anon_mmap_alloc( size_t size, int prot );
  extern void virtual_init(void);
 diff --git a/dlls/ntdll/unixlib.h b/dlls/ntdll/unixlib.h
-index 1a05a0e..2fc8466 100644
+index 1a05a0ede15..2fc8466c19e 100644
 --- a/dlls/ntdll/unixlib.h
 +++ b/dlls/ntdll/unixlib.h
 @@ -113,7 +113,6 @@ enum ntdll_unix_funcs
@@ -355,7 +355,7 @@ index 1a05a0e..2fc8466 100644
      unix_debugstr_pc,
  };
 diff --git a/dlls/shell32/shellpath.c b/dlls/shell32/shellpath.c
-index c8fbb4e..ed96d2b 100644
+index c8fbb4ed40c..ed96d2b67dc 100644
 --- a/dlls/shell32/shellpath.c
 +++ b/dlls/shell32/shellpath.c
 @@ -2670,6 +2670,180 @@ end:
@@ -631,7 +631,7 @@ index c8fbb4e..ed96d2b 100644
  }
  
 diff --git a/dlls/winex11.drv/window.c b/dlls/winex11.drv/window.c
-index ef9c284..1b0d391 100644
+index ef9c284a53d..1b0d3910aaa 100644
 --- a/dlls/winex11.drv/window.c
 +++ b/dlls/winex11.drv/window.c
 @@ -1166,19 +1166,8 @@ static void set_initial_wm_hints( Display *display, Window window )
@@ -657,7 +657,7 @@ index ef9c284..1b0d391 100644
          XFree( class_hints );
      }
 diff --git a/loader/wine.inf.in b/loader/wine.inf.in
-index 1b822ad..24a7cc5 100644
+index 1b822ad1eab..24a7cc57d68 100644
 --- a/loader/wine.inf.in
 +++ b/loader/wine.inf.in
 @@ -67,10 +67,8 @@ AddReg=\
@@ -935,7 +935,7 @@ index 1b822ad..24a7cc5 100644
 -HKCU,Software\Wine\AppDefaults\Pentiment.exe\DllOverrides,"SpeechSynthesisWrapper",,"disabled"
 -HKCU,Software\Wine\AppDefaults\Maine-Win64-Shipping.exe\DllOverrides,"SpeechSynthWrapper",0x2,"disabled"
 diff --git a/programs/wineboot/wineboot.c b/programs/wineboot/wineboot.c
-index 70f18a5..5104e83 100644
+index 70f18a58676..5104e830146 100644
 --- a/programs/wineboot/wineboot.c
 +++ b/programs/wineboot/wineboot.c
 @@ -1534,6 +1534,64 @@ static BOOL start_services_process(void)
@@ -1020,7 +1020,7 @@ index 70f18a5..5104e83 100644
          install_root_pnp_devices();
          update_user_profile();
 diff --git a/programs/winebrowser/main.c b/programs/winebrowser/main.c
-index 738930e..2441607 100644
+index 738930e39a6..24416070152 100644
 --- a/programs/winebrowser/main.c
 +++ b/programs/winebrowser/main.c
 @@ -63,17 +63,6 @@ static char *strdup_unixcp( const WCHAR *str )
@@ -1054,7 +1054,7 @@ index 738930e..2441607 100644
      {
          WCHAR **args = CommandLineToArgvW( candidates, &count );
 diff --git a/programs/winedbg/debugger.h b/programs/winedbg/debugger.h
-index f3b02e9..45a91e2 100644
+index f3b02e9c5df..45a91e2a6f5 100644
 --- a/programs/winedbg/debugger.h
 +++ b/programs/winedbg/debugger.h
 @@ -311,8 +311,6 @@ extern	DWORD	                dbg_curr_tid;
@@ -1067,7 +1067,7 @@ index f3b02e9..45a91e2 100644
  struct dbg_internal_var
  {
 diff --git a/programs/winedbg/tgt_active.c b/programs/winedbg/tgt_active.c
-index 8bb20ec..a919f70 100644
+index 8bb20ecadf2..a919f70a486 100644
 --- a/programs/winedbg/tgt_active.c
 +++ b/programs/winedbg/tgt_active.c
 @@ -22,8 +22,6 @@
@@ -1140,7 +1140,7 @@ index 8bb20ec..a919f70 100644
  
      input = parser_generate_command_file("echo Modules:", "info share",
 diff --git a/programs/winedbg/winedbg.c b/programs/winedbg/winedbg.c
-index b7c899d..c7f14e8 100644
+index b7c899d55c4..c7f14e8238f 100644
 --- a/programs/winedbg/winedbg.c
 +++ b/programs/winedbg/winedbg.c
 @@ -82,8 +82,6 @@ DWORD	                dbg_curr_pid = 0;

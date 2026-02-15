@@ -1,7 +1,7 @@
-From 9190ce7b30847bd34d4c1f344e392ab01c6a362a Mon Sep 17 00:00:00 2001
+From c3aaec07c4850ca2a4f5b91d55b2a82a2557a14e Mon Sep 17 00:00:00 2001
 From: Elizabeth Figura <zfigura@codeweavers.com>
 Date: Mon, 7 Jul 2025 21:44:10 -0400
-Subject: [PATCH 08/11] ntsync implementation
+Subject: [PATCH 09/12] ntsync implementation
 
 ---
  dlls/ntdll/unix/esync.c        |   2 +-
@@ -45,7 +45,7 @@ Subject: [PATCH 08/11] ntsync implementation
  38 files changed, 1578 insertions(+), 125 deletions(-)
 
 diff --git a/dlls/ntdll/unix/esync.c b/dlls/ntdll/unix/esync.c
-index 3074f7c..f9f65b2 100644
+index 3074f7c72ea..f9f65b28d3d 100644
 --- a/dlls/ntdll/unix/esync.c
 +++ b/dlls/ntdll/unix/esync.c
 @@ -57,7 +57,7 @@ int do_esync(void)
@@ -58,7 +58,7 @@ index 3074f7c..f9f65b2 100644
      return do_esync_cached;
  #else
 diff --git a/dlls/ntdll/unix/file.c b/dlls/ntdll/unix/file.c
-index 0284731..1a2f037 100644
+index 028473169f1..1a2f037601e 100644
 --- a/dlls/ntdll/unix/file.c
 +++ b/dlls/ntdll/unix/file.c
 @@ -7412,7 +7412,7 @@ NTSTATUS WINAPI NtLockFile( HANDLE file, HANDLE event, PIO_APC_ROUTINE apc, void
@@ -71,7 +71,7 @@ index 0284731..1a2f037 100644
          }
          else  /* Unix lock conflict, sleep a bit and retry */
 diff --git a/dlls/ntdll/unix/fsync.c b/dlls/ntdll/unix/fsync.c
-index a54fb0e..2f1cf48 100644
+index a54fb0e4b7b..2f1cf481da1 100644
 --- a/dlls/ntdll/unix/fsync.c
 +++ b/dlls/ntdll/unix/fsync.c
 @@ -171,7 +171,7 @@ int do_fsync(void)
@@ -84,7 +84,7 @@ index a54fb0e..2f1cf48 100644
  
      return do_fsync_cached;
 diff --git a/dlls/ntdll/unix/process.c b/dlls/ntdll/unix/process.c
-index e33de30..70c4bba 100644
+index e33de3014ba..70c4bba027b 100644
 --- a/dlls/ntdll/unix/process.c
 +++ b/dlls/ntdll/unix/process.c
 @@ -911,7 +911,7 @@ NTSTATUS WINAPI NtCreateUserProcess( HANDLE *process_handle_ptr, HANDLE *thread_
@@ -97,7 +97,7 @@ index e33de30..70c4bba 100644
      {
          req->info = wine_server_obj_handle( process_info );
 diff --git a/dlls/ntdll/unix/server.c b/dlls/ntdll/unix/server.c
-index 92fdf68..7140697 100644
+index 92fdf68b000..71406976f4e 100644
 --- a/dlls/ntdll/unix/server.c
 +++ b/dlls/ntdll/unix/server.c
 @@ -800,7 +800,6 @@ unsigned int server_wait( const union select_op *select_op, data_size_t size, UI
@@ -154,7 +154,7 @@ index 92fdf68..7140697 100644
          fsync_close( handle );
  
 diff --git a/dlls/ntdll/unix/sync.c b/dlls/ntdll/unix/sync.c
-index 255f14f..e804cf8 100644
+index 255f14f0f65..e804cf8de4d 100644
 --- a/dlls/ntdll/unix/sync.c
 +++ b/dlls/ntdll/unix/sync.c
 @@ -30,9 +30,11 @@
@@ -986,7 +986,7 @@ index 255f14f..e804cf8 100644
  
  /******************************************************************************
 diff --git a/dlls/ntdll/unix/thread.c b/dlls/ntdll/unix/thread.c
-index 54b0420..5312999 100644
+index 54b0420d2f1..53129999240 100644
 --- a/dlls/ntdll/unix/thread.c
 +++ b/dlls/ntdll/unix/thread.c
 @@ -1864,7 +1864,7 @@ NTSTATUS get_thread_context( HANDLE handle, void *context, BOOL *self, USHORT ma
@@ -999,7 +999,7 @@ index 54b0420..5312999 100644
          SERVER_START_REQ( get_thread_context )
          {
 diff --git a/dlls/ntdll/unix/unix_private.h b/dlls/ntdll/unix/unix_private.h
-index c41a14a..aadf9d5 100644
+index f090b2d27d2..0385b1018fa 100644
 --- a/dlls/ntdll/unix/unix_private.h
 +++ b/dlls/ntdll/unix/unix_private.h
 @@ -114,6 +114,7 @@ struct ntdll_thread_data
@@ -1010,7 +1010,7 @@ index c41a14a..aadf9d5 100644
  };
  
  C_ASSERT( sizeof(struct ntdll_thread_data) <= sizeof(((TEB *)0)->GdiTebBatch) );
-@@ -224,6 +225,8 @@ extern void start_server( BOOL debug );
+@@ -223,6 +224,8 @@ extern void start_server( BOOL debug );
  
  extern pthread_mutex_t fd_cache_mutex;
  
@@ -1019,7 +1019,7 @@ index c41a14a..aadf9d5 100644
  extern unsigned int server_call_unlocked( void *req_ptr );
  extern void server_enter_uninterrupted_section( pthread_mutex_t *mutex, sigset_t *sigset );
  extern void server_leave_uninterrupted_section( pthread_mutex_t *mutex, sigset_t *sigset );
-@@ -405,6 +408,8 @@ extern NTSTATUS wow64_wine_spawnvp( void *args );
+@@ -404,6 +407,8 @@ extern NTSTATUS wow64_wine_spawnvp( void *args );
  
  extern void dbg_init(void);
  
@@ -1028,7 +1028,7 @@ index c41a14a..aadf9d5 100644
  extern NTSTATUS call_user_apc_dispatcher( CONTEXT *context_ptr, ULONG_PTR arg1, ULONG_PTR arg2, ULONG_PTR arg3,
                                            PNTAPCFUNC func, NTSTATUS status );
  extern NTSTATUS call_user_exception_dispatcher( EXCEPTION_RECORD *rec, CONTEXT *context );
-@@ -415,6 +420,7 @@ extern void call_raise_user_exception_dispatcher(void);
+@@ -414,6 +419,7 @@ extern void call_raise_user_exception_dispatcher(void);
  extern const char * wine_debuginfostr_pc(void *pc);
  
  #define TICKSPERSEC 10000000
@@ -1037,7 +1037,7 @@ index c41a14a..aadf9d5 100644
  
  static inline ULONGLONG ticks_from_time_t( time_t time )
 diff --git a/dlls/ntdll/unix/virtual.c b/dlls/ntdll/unix/virtual.c
-index c4d74dd..3d12a3c 100644
+index c4d74dd0310..3d12a3c2f6e 100644
 --- a/dlls/ntdll/unix/virtual.c
 +++ b/dlls/ntdll/unix/virtual.c
 @@ -4214,6 +4214,7 @@ static TEB *init_teb( void *ptr, BOOL is_wow )
@@ -1049,7 +1049,7 @@ index c4d74dd..3d12a3c 100644
      return teb;
  }
 diff --git a/include/wine/server_protocol.h b/include/wine/server_protocol.h
-index a33136a..2fe15d6 100644
+index a33136a4bc0..2fe15d62803 100644
 --- a/include/wine/server_protocol.h
 +++ b/include/wine/server_protocol.h
 @@ -6167,6 +6167,54 @@ struct get_linux_sync_device_reply
@@ -1144,7 +1144,7 @@ index a33136a..2fe15d6 100644
  
  #endif /* __WINE_WINE_SERVER_PROTOCOL_H */
 diff --git a/server/change.c b/server/change.c
-index f512900..5a9667e 100644
+index f5129001836..5a9667eefcb 100644
 --- a/server/change.c
 +++ b/server/change.c
 @@ -126,7 +126,7 @@ static const struct object_ops dir_ops =
@@ -1157,7 +1157,7 @@ index f512900..5a9667e 100644
      dir_destroy               /* destroy */
  };
 diff --git a/server/completion.c b/server/completion.c
-index e2fd3b3..7b12fc5 100644
+index e2fd3b39924..7b12fc5ab04 100644
 --- a/server/completion.c
 +++ b/server/completion.c
 @@ -25,6 +25,7 @@
@@ -1258,7 +1258,7 @@ index e2fd3b3..7b12fc5 100644
              if (do_fsync()) fsync_clear( &completion->obj );
          }
 diff --git a/server/console.c b/server/console.c
-index 530ee31..de5bc94 100644
+index 530ee31581f..de5bc946e9b 100644
 --- a/server/console.c
 +++ b/server/console.c
 @@ -56,6 +56,7 @@ struct console
@@ -1446,7 +1446,7 @@ index 530ee31..de5bc94 100644
      release_object( server );
  }
 diff --git a/server/debugger.c b/server/debugger.c
-index 249c530..21783fc 100644
+index 249c530e9b1..21783fcc2b0 100644
 --- a/server/debugger.c
 +++ b/server/debugger.c
 @@ -25,6 +25,7 @@
@@ -1541,7 +1541,7 @@ index 249c530..21783fc 100644
      else
      {
 diff --git a/server/device.c b/server/device.c
-index b310e76..d8f0036 100644
+index b310e76428b..d8f00369c41 100644
 --- a/server/device.c
 +++ b/server/device.c
 @@ -25,6 +25,7 @@
@@ -1653,7 +1653,7 @@ index b310e76..d8f0036 100644
                  if (irp->file) grab_object( irp );
                  manager->current_call = irp;
 diff --git a/server/esync.c b/server/esync.c
-index 24f3d41..f273465 100644
+index 24f3d41ad77..f2734652738 100644
 --- a/server/esync.c
 +++ b/server/esync.c
 @@ -51,7 +51,7 @@ int do_esync(void)
@@ -1666,7 +1666,7 @@ index 24f3d41..f273465 100644
      return do_esync_cached;
  #else
 diff --git a/server/event.c b/server/event.c
-index e6c8647..930d7f8 100644
+index e6c86472c71..930d7f8ab58 100644
 --- a/server/event.c
 +++ b/server/event.c
 @@ -25,6 +25,7 @@
@@ -1900,7 +1900,7 @@ index e6c8647..930d7f8 100644
      release_object( event );
  }
 diff --git a/server/fd.c b/server/fd.c
-index 4c822a7..2998418 100644
+index 4c822a74b40..29984185f72 100644
 --- a/server/fd.c
 +++ b/server/fd.c
 @@ -166,6 +166,7 @@ struct fd
@@ -1979,7 +1979,7 @@ index 4c822a7..2998418 100644
  int default_fd_signaled( struct object *obj, struct wait_queue_entry *entry )
  {
 diff --git a/server/file.h b/server/file.h
-index e7c5a32..cd61e56 100644
+index e7c5a32bbb5..cd61e56f1fc 100644
 --- a/server/file.h
 +++ b/server/file.h
 @@ -113,6 +113,7 @@ extern void get_nt_name( struct fd *fd, struct unicode_str *name );
@@ -1991,7 +1991,7 @@ index e7c5a32..cd61e56 100644
  extern void default_poll_event( struct fd *fd, int event );
  extern void fd_cancel_async( struct fd *fd, struct async *async );
 diff --git a/server/fsync.c b/server/fsync.c
-index 20049d8..d35bd43 100644
+index 20049d85aed..d35bd4341e8 100644
 --- a/server/fsync.c
 +++ b/server/fsync.c
 @@ -59,7 +59,7 @@ int do_fsync(void)
@@ -2004,7 +2004,7 @@ index 20049d8..d35bd43 100644
  
      return do_fsync_cached;
 diff --git a/server/inproc_sync.c b/server/inproc_sync.c
-index e6fb2df..1e696d9 100644
+index e6fb2dfd2d4..1e696d9ecbb 100644
 --- a/server/inproc_sync.c
 +++ b/server/inproc_sync.c
 @@ -44,16 +44,134 @@
@@ -2174,7 +2174,7 @@ index e6fb2df..1e696d9 100644
 +#endif
 +}
 diff --git a/server/mailslot.c b/server/mailslot.c
-index f89778b..fef0ce2 100644
+index f89778b924e..fef0ce25b4c 100644
 --- a/server/mailslot.c
 +++ b/server/mailslot.c
 @@ -95,7 +95,7 @@ static const struct object_ops mailslot_ops =
@@ -2205,7 +2205,7 @@ index f89778b..fef0ce2 100644
      mailslot_device_file_destroy            /* destroy */
  };
 diff --git a/server/main.c b/server/main.c
-index d0a0a48..7d45a09 100644
+index d0a0a4879b5..7d45a09e9cc 100644
 --- a/server/main.c
 +++ b/server/main.c
 @@ -232,13 +232,16 @@ int main( int argc, char *argv[] )
@@ -2227,7 +2227,7 @@ index d0a0a48..7d45a09 100644
  
      if (debug_level) fprintf( stderr, "wineserver: starting (pid=%ld)\n", (long) getpid() );
 diff --git a/server/mutex.c b/server/mutex.c
-index 58ac83b..6a16f70 100644
+index 58ac83bd3f7..6a16f703170 100644
 --- a/server/mutex.c
 +++ b/server/mutex.c
 @@ -25,6 +25,7 @@
@@ -2471,7 +2471,7 @@ index 58ac83b..6a16f70 100644
          release_object( mutex );
      }
 diff --git a/server/named_pipe.c b/server/named_pipe.c
-index ad0c9f5..fbcd753 100644
+index ad0c9f549a6..fbcd75321bc 100644
 --- a/server/named_pipe.c
 +++ b/server/named_pipe.c
 @@ -187,7 +187,7 @@ static const struct object_ops pipe_server_ops =
@@ -2511,7 +2511,7 @@ index ad0c9f5..fbcd753 100644
      named_pipe_dir_destroy                   /* destroy */
  };
 diff --git a/server/object.h b/server/object.h
-index e212ec7..c860ec1 100644
+index e212ec75a0d..c860ec1d1e0 100644
 --- a/server/object.h
 +++ b/server/object.h
 @@ -240,7 +240,14 @@ extern void abandon_mutexes( struct thread *thread );
@@ -2530,7 +2530,7 @@ index e212ec7..c860ec1 100644
  /* serial functions */
  
 diff --git a/server/process.c b/server/process.c
-index 8faf3ae..ae987a6 100644
+index 8faf3ae754d..ae987a6cfd5 100644
 --- a/server/process.c
 +++ b/server/process.c
 @@ -96,6 +96,7 @@ static unsigned int process_map_access( struct object *obj, unsigned int access
@@ -2649,7 +2649,7 @@ index 8faf3ae..ae987a6 100644
  
  /* add a thread to a process running threads list */
 diff --git a/server/process.h b/server/process.h
-index e332069..8cf5c2f 100644
+index e332069c56f..8cf5c2fba1f 100644
 --- a/server/process.h
 +++ b/server/process.h
 @@ -86,6 +86,7 @@ struct process
@@ -2661,7 +2661,7 @@ index e332069..8cf5c2f 100644
      unsigned int         fsync_idx;
      struct cpu_topology_override cpu_override; /* Overridden CPUs to host CPUs mapping. */
 diff --git a/server/protocol.def b/server/protocol.def
-index 2a90837..23453fb 100644
+index 2a90837992e..23453fbaba5 100644
 --- a/server/protocol.def
 +++ b/server/protocol.def
 @@ -4271,3 +4271,26 @@ enum inproc_sync_type
@@ -2692,7 +2692,7 @@ index 2a90837..23453fb 100644
 +    obj_handle_t handle;          /* handle to the event */
 +@END
 diff --git a/server/queue.c b/server/queue.c
-index 20d8c2d..ad6547a 100644
+index 20d8c2d959c..ad6547a2bce 100644
 --- a/server/queue.c
 +++ b/server/queue.c
 @@ -146,6 +146,8 @@ struct msg_queue
@@ -2887,7 +2887,7 @@ index 20d8c2d..ad6547a 100644
  {
      struct msg_queue *queue = get_current_queue();
 diff --git a/server/request_handlers.h b/server/request_handlers.h
-index 30e6ee2..28fb4b2 100644
+index 30e6ee25bc9..28fb4b2df34 100644
 --- a/server/request_handlers.h
 +++ b/server/request_handlers.h
 @@ -314,6 +314,10 @@ DECL_HANDLER(fsync_msgwait);
@@ -2928,7 +2928,7 @@ index 30e6ee2..28fb4b2 100644
 +C_ASSERT( offsetof(struct get_inproc_alert_event_reply, handle) == 8 );
 +C_ASSERT( sizeof(struct get_inproc_alert_event_reply) == 16 );
 diff --git a/server/request_trace.h b/server/request_trace.h
-index 8de40b1..b70342f 100644
+index 8de40b18686..b70342f9581 100644
 --- a/server/request_trace.h
 +++ b/server/request_trace.h
 @@ -3514,6 +3514,35 @@ static void dump_get_linux_sync_device_request( const struct get_linux_sync_devi
@@ -3001,7 +3001,7 @@ index 8de40b1..b70342f 100644
  
  static const struct
 diff --git a/server/semaphore.c b/server/semaphore.c
-index 567a922..ecd6c8b 100644
+index 567a922c0ac..ecd6c8b7c82 100644
 --- a/server/semaphore.c
 +++ b/server/semaphore.c
 @@ -25,6 +25,7 @@
@@ -3157,7 +3157,7 @@ index 567a922..ecd6c8b 100644
      }
  }
 diff --git a/server/serial.c b/server/serial.c
-index 93619eb..c1bdfbb 100644
+index 93619ebccde..c1bdfbbe2b5 100644
 --- a/server/serial.c
 +++ b/server/serial.c
 @@ -105,7 +105,7 @@ static const struct object_ops serial_ops =
@@ -3170,7 +3170,7 @@ index 93619eb..c1bdfbb 100644
      serial_destroy                /* destroy */
  };
 diff --git a/server/sock.c b/server/sock.c
-index 9772866..af2f778 100644
+index 977286615dc..af2f778108c 100644
 --- a/server/sock.c
 +++ b/server/sock.c
 @@ -485,7 +485,7 @@ static const struct object_ops sock_ops =
@@ -3183,7 +3183,7 @@ index 9772866..af2f778 100644
      sock_destroy                  /* destroy */
  };
 diff --git a/server/thread.c b/server/thread.c
-index 4dce102..28e49a0 100644
+index 4dce10259b4..28e49a09bed 100644
 --- a/server/thread.c
 +++ b/server/thread.c
 @@ -190,6 +190,7 @@ static unsigned int thread_get_fsync_idx( struct object *obj, enum fsync_type *t
@@ -3287,7 +3287,7 @@ index 4dce102..28e49a0 100644
 +        reply->handle = alloc_handle( current->process, current->inproc_alert_event, SYNCHRONIZE, 0 );
 +}
 diff --git a/server/thread.h b/server/thread.h
-index d9b0573..4b21eea 100644
+index d9b057311a7..4b21eea2238 100644
 --- a/server/thread.h
 +++ b/server/thread.h
 @@ -98,6 +98,8 @@ struct thread
@@ -3300,7 +3300,7 @@ index d9b0573..4b21eea 100644
  
  extern struct thread *current;
 diff --git a/server/timer.c b/server/timer.c
-index ca367a6..e3058f4 100644
+index ca367a6fb7d..e3058f48bd8 100644
 --- a/server/timer.c
 +++ b/server/timer.c
 @@ -26,6 +26,7 @@

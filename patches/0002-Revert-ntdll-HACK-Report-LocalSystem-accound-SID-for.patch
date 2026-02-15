@@ -1,0 +1,89 @@
+From 60a436c8e52d0431c45f3d65a095cbcf713ffdc4 Mon Sep 17 00:00:00 2001
+From: effectsbot <eff3ctsb0t@gmail.com>
+Date: Sun, 15 Feb 2026 15:24:02 +0100
+Subject: [PATCH 02/12] Revert "ntdll: HACK: Report LocalSystem accound SID for
+ MicrosoftEdgeUpdate."
+
+This reverts commit 649be0292a026bc49bb0d423db52cbf903671440.
+
+Signed-off-by: effectsbot <eff3ctsb0t@gmail.com>
+---
+ dlls/ntdll/unix/loader.c       |  8 --------
+ dlls/ntdll/unix/security.c     | 22 ----------------------
+ dlls/ntdll/unix/unix_private.h |  1 -
+ 3 files changed, 31 deletions(-)
+
+diff --git a/dlls/ntdll/unix/loader.c b/dlls/ntdll/unix/loader.c
+index 00d5ae1c0ed..1c53ff2cb08 100644
+--- a/dlls/ntdll/unix/loader.c
++++ b/dlls/ntdll/unix/loader.c
+@@ -2199,7 +2199,6 @@ BOOL fsync_simulate_sched_quantum;
+ BOOL alert_simulate_sched_quantum;
+ BOOL fsync_yield_to_waiters;
+ BOOL fsync_help_simulated_pulse;
+-BOOL localsystem_sid;
+ BOOL simulate_writecopy;
+ BOOL wine_allocs_2g_limit;
+ SIZE_T kernel_stack_size = 0x100000;
+@@ -2310,13 +2309,6 @@ static void hacks_init(void)
+     if (sgi) wine_allocs_2g_limit = !strcmp(sgi, "359870");
+     if (wine_allocs_2g_limit) ERR("Allocation 2g limit enabled.\n");
+ 
+-    if (main_argc > 1 && strstr(main_argv[1], "MicrosoftEdgeUpdate.exe"))
+-    {
+-        ERR("HACK: reporting LocalSystem account SID.\n");
+-        localsystem_sid = TRUE;
+-        return;
+-    }
+-
+     if ((env_str = getenv( "WINE_KERNEL_STACK_SIZE" )))
+         kernel_stack_size = atoll( env_str ) * 1024;
+     else if (sgi && !strcmp( sgi, "702700" ))
+diff --git a/dlls/ntdll/unix/security.c b/dlls/ntdll/unix/security.c
+index badd72877d9..03cf26c1555 100644
+--- a/dlls/ntdll/unix/security.c
++++ b/dlls/ntdll/unix/security.c
+@@ -323,28 +323,6 @@ NTSTATUS WINAPI NtQueryInformationToken( HANDLE token, TOKEN_INFORMATION_CLASS c
+     switch (class)
+     {
+     case TokenUser:
+-        if (localsystem_sid)
+-        {
+-            static const struct sid local_system_sid = { SID_REVISION, 1, SECURITY_NT_AUTHORITY, { SECURITY_LOCAL_SYSTEM_RID } };
+-            DWORD sid_len = offsetof( struct sid, sub_auth[local_system_sid.sub_count] );
+-            TOKEN_USER *tuser;
+-            PSID sid;
+-
+-            if (retlen) *retlen = sid_len + sizeof(TOKEN_USER);
+-            if (sid_len + sizeof(TOKEN_USER) > length)
+-            {
+-                status = STATUS_BUFFER_TOO_SMALL;
+-            }
+-            else
+-            {
+-                tuser = info;
+-                sid = tuser + 1;
+-                tuser->User.Sid = sid;
+-                tuser->User.Attributes = 0;
+-                memcpy( sid, &local_system_sid, sid_len );
+-            }
+-            break;
+-        }
+         SERVER_START_REQ( get_token_sid )
+         {
+             TOKEN_USER *tuser = info;
+diff --git a/dlls/ntdll/unix/unix_private.h b/dlls/ntdll/unix/unix_private.h
+index 2d3a591bc68..dc0a8c3b368 100644
+--- a/dlls/ntdll/unix/unix_private.h
++++ b/dlls/ntdll/unix/unix_private.h
+@@ -198,7 +198,6 @@ extern BOOL fsync_simulate_sched_quantum;
+ extern BOOL alert_simulate_sched_quantum;
+ extern BOOL fsync_yield_to_waiters;
+ extern BOOL fsync_help_simulated_pulse;
+-extern BOOL localsystem_sid;
+ extern BOOL simulate_writecopy;
+ extern long long ram_reporting_bias;
+ extern BOOL wine_allocs_2g_limit;
+-- 
+2.53.0
+

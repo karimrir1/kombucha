@@ -1,7 +1,7 @@
-From 98197d1dfcb015869db92af2d93d6a113f38671c Mon Sep 17 00:00:00 2001
+From 6b86ac367d5767e261c067261ff12c70bda2ce36 Mon Sep 17 00:00:00 2001
 From: Kareem Aladli <karimri@protonmail.com>
 Date: Mon, 14 Jul 2025 17:17:32 +0300
-Subject: [PATCH 03/11] ntdll: Set old_prot to PAGE_NOACCESS in
+Subject: [PATCH 04/12] ntdll: Set old_prot to PAGE_NOACCESS in
  NtProtectVirtualMemory() if the range is not mapped or committed.
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 03/11] ntdll: Set old_prot to PAGE_NOACCESS in
  1 file changed, 2 insertions(+)
 
 diff --git a/dlls/ntdll/unix/virtual.c b/dlls/ntdll/unix/virtual.c
-index 7378c96..c4d74dd 100644
+index 7378c967a5d..c4d74dd0310 100644
 --- a/dlls/ntdll/unix/virtual.c
 +++ b/dlls/ntdll/unix/virtual.c
 @@ -5660,6 +5660,7 @@ NTSTATUS WINAPI NtProtectVirtualMemory( HANDLE process, PVOID *addr_ptr, SIZE_T

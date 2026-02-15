@@ -1,7 +1,7 @@
-From 51f499d4fa8b7a71fddd9a2005da5e3d9412a4fd Mon Sep 17 00:00:00 2001
+From 4490409d078dae0f4f6d012fbbd541074f14e460 Mon Sep 17 00:00:00 2001
 From: Elizabeth Figura <zfigura@codeweavers.com>
 Date: Thu, 3 Jul 2025 16:28:01 -0400
-Subject: [PATCH 07/11] server: Add an object operation to retrieve an
+Subject: [PATCH 08/12] server: Add an object operation to retrieve an
  in-process synchronization object.
 
 ---
@@ -51,7 +51,7 @@ Subject: [PATCH 07/11] server: Add an object operation to retrieve an
  create mode 100644 include/wine/ntsync.h
 
 diff --git a/dlls/ntdll/unix/sync.c b/dlls/ntdll/unix/sync.c
-index 0a73d7d..255f14f 100644
+index 0a73d7df6a6..255f14f0f65 100644
 --- a/dlls/ntdll/unix/sync.c
 +++ b/dlls/ntdll/unix/sync.c
 @@ -57,8 +57,8 @@
@@ -75,7 +75,7 @@ index 0a73d7d..255f14f 100644
                  }
              }
 diff --git a/include/Makefile.in b/include/Makefile.in
-index 96ec0fe..1d174c2 100644
+index 96ec0fe385d..1d174c2d312 100644
 --- a/include/Makefile.in
 +++ b/include/Makefile.in
 @@ -944,6 +944,7 @@ SOURCES = \
@@ -88,7 +88,7 @@ index 96ec0fe..1d174c2 100644
  	wine/rbtree.h \
 diff --git a/include/wine/ntsync.h b/include/wine/ntsync.h
 new file mode 100644
-index 0000000..e8c2f72
+index 00000000000..e8c2f725ec1
 --- /dev/null
 +++ b/include/wine/ntsync.h
 @@ -0,0 +1,61 @@
@@ -154,7 +154,7 @@ index 0000000..e8c2f72
 +
 +#endif
 diff --git a/include/wine/server_protocol.h b/include/wine/server_protocol.h
-index 39d0e6e..a33136a 100644
+index 39d0e6e4e5f..a33136a4bc0 100644
 --- a/include/wine/server_protocol.h
 +++ b/include/wine/server_protocol.h
 @@ -6143,6 +6143,18 @@ struct fsync_free_shm_idx_reply
@@ -185,7 +185,7 @@ index 39d0e6e..a33136a 100644
  
  #endif /* __WINE_WINE_SERVER_PROTOCOL_H */
 diff --git a/server/async.c b/server/async.c
-index 10089b2..bcec1a4 100644
+index 10089b20a0e..bcec1a43315 100644
 --- a/server/async.c
 +++ b/server/async.c
 @@ -92,6 +92,7 @@ static const struct object_ops async_ops =
@@ -205,7 +205,7 @@ index 10089b2..bcec1a4 100644
      iosb_destroy              /* destroy */
  };
 diff --git a/server/atom.c b/server/atom.c
-index 6b95a54..25d7f60 100644
+index 6b95a546597..25d7f6041c2 100644
 --- a/server/atom.c
 +++ b/server/atom.c
 @@ -93,6 +93,7 @@ static const struct object_ops atom_table_ops =
@@ -217,7 +217,7 @@ index 6b95a54..25d7f60 100644
      atom_table_destroy            /* destroy */
  };
 diff --git a/server/change.c b/server/change.c
-index ea55167..f512900 100644
+index ea551676c25..f5129001836 100644
 --- a/server/change.c
 +++ b/server/change.c
 @@ -126,6 +126,7 @@ static const struct object_ops dir_ops =
@@ -229,7 +229,7 @@ index ea55167..f512900 100644
      dir_destroy               /* destroy */
  };
 diff --git a/server/clipboard.c b/server/clipboard.c
-index a2e0af2..5e70984 100644
+index a2e0af2ba32..5e709842712 100644
 --- a/server/clipboard.c
 +++ b/server/clipboard.c
 @@ -90,6 +90,7 @@ static const struct object_ops clipboard_ops =
@@ -241,7 +241,7 @@ index a2e0af2..5e70984 100644
      clipboard_destroy             /* destroy */
  };
 diff --git a/server/completion.c b/server/completion.c
-index 4c5d2f7..e2fd3b3 100644
+index 4c5d2f79bc1..e2fd3b39924 100644
 --- a/server/completion.c
 +++ b/server/completion.c
 @@ -110,6 +110,7 @@ static const struct object_ops completion_wait_ops =
@@ -261,7 +261,7 @@ index 4c5d2f7..e2fd3b3 100644
      completion_destroy         /* destroy */
  };
 diff --git a/server/console.c b/server/console.c
-index 58ec10f..530ee31 100644
+index 58ec10fa856..530ee31581f 100644
 --- a/server/console.c
 +++ b/server/console.c
 @@ -97,6 +97,7 @@ static const struct object_ops console_ops =
@@ -321,7 +321,7 @@ index 58ec10f..530ee31 100644
      console_connection_destroy        /* destroy */
  };
 diff --git a/server/debugger.c b/server/debugger.c
-index 5494eb5..249c530 100644
+index 5494eb517df..249c530e9b1 100644
 --- a/server/debugger.c
 +++ b/server/debugger.c
 @@ -100,6 +100,7 @@ static const struct object_ops debug_event_ops =
@@ -341,7 +341,7 @@ index 5494eb5..249c530 100644
      debug_obj_destroy              /* destroy */
  };
 diff --git a/server/device.c b/server/device.c
-index 4c5eadc..b310e76 100644
+index 4c5eadcb399..b310e76428b 100644
 --- a/server/device.c
 +++ b/server/device.c
 @@ -82,6 +82,7 @@ static const struct object_ops irp_call_ops =
@@ -377,7 +377,7 @@ index 4c5eadc..b310e76 100644
      device_file_destroy               /* destroy */
  };
 diff --git a/server/directory.c b/server/directory.c
-index 5ba66ec..f36b3a3 100644
+index 5ba66ec8d5b..f36b3a31cad 100644
 --- a/server/directory.c
 +++ b/server/directory.c
 @@ -86,6 +86,7 @@ static const struct object_ops object_type_ops =
@@ -397,7 +397,7 @@ index 5ba66ec..f36b3a3 100644
      directory_destroy             /* destroy */
  };
 diff --git a/server/esync.c b/server/esync.c
-index a516443..24f3d41 100644
+index a5164435ed6..24f3d41ad77 100644
 --- a/server/esync.c
 +++ b/server/esync.c
 @@ -143,6 +143,7 @@ const struct object_ops esync_ops =
@@ -409,7 +409,7 @@ index a516443..24f3d41 100644
      esync_destroy              /* destroy */
  };
 diff --git a/server/event.c b/server/event.c
-index be12069..e6c8647 100644
+index be120695e6e..e6c86472c71 100644
 --- a/server/event.c
 +++ b/server/event.c
 @@ -93,6 +93,7 @@ static const struct object_ops event_ops =
@@ -429,7 +429,7 @@ index be12069..e6c8647 100644
      no_destroy                   /* destroy */
  };
 diff --git a/server/fd.c b/server/fd.c
-index 9fd0f9c..4c822a7 100644
+index 9fd0f9c4e6a..4c822a74b40 100644
 --- a/server/fd.c
 +++ b/server/fd.c
 @@ -193,6 +193,7 @@ static const struct object_ops fd_ops =
@@ -465,7 +465,7 @@ index 9fd0f9c..4c822a7 100644
      no_destroy                  /* destroy */
  };
 diff --git a/server/file.c b/server/file.c
-index 934c394..40ff667 100644
+index 934c394ae34..40ff667c98e 100644
 --- a/server/file.c
 +++ b/server/file.c
 @@ -137,6 +137,7 @@ static const struct object_ops file_ops =
@@ -477,7 +477,7 @@ index 934c394..40ff667 100644
      file_destroy                  /* destroy */
  };
 diff --git a/server/fsync.c b/server/fsync.c
-index 8097b86..20049d8 100644
+index 8097b86fcea..20049d85aed 100644
 --- a/server/fsync.c
 +++ b/server/fsync.c
 @@ -164,6 +164,7 @@ const struct object_ops fsync_ops =
@@ -489,7 +489,7 @@ index 8097b86..20049d8 100644
      fsync_destroy              /* destroy */
  };
 diff --git a/server/handle.c b/server/handle.c
-index 2dca6d8..85e9057 100644
+index 2dca6d8155d..85e90577d48 100644
 --- a/server/handle.c
 +++ b/server/handle.c
 @@ -140,6 +140,7 @@ static const struct object_ops handle_table_ops =
@@ -501,7 +501,7 @@ index 2dca6d8..85e9057 100644
      handle_table_destroy             /* destroy */
  };
 diff --git a/server/hook.c b/server/hook.c
-index 499b333..521f28e 100644
+index 499b333dc3a..521f28e085f 100644
 --- a/server/hook.c
 +++ b/server/hook.c
 @@ -95,6 +95,7 @@ static const struct object_ops hook_table_ops =
@@ -513,7 +513,7 @@ index 499b333..521f28e 100644
      hook_table_destroy            /* destroy */
  };
 diff --git a/server/inproc_sync.c b/server/inproc_sync.c
-index 47b2c4d..e6fb2df 100644
+index 47b2c4d44a2..e6fb2dfd2d4 100644
 --- a/server/inproc_sync.c
 +++ b/server/inproc_sync.c
 @@ -33,8 +33,8 @@
@@ -528,7 +528,7 @@ index 47b2c4d..e6fb2df 100644
  
  #ifdef NTSYNC_IOC_EVENT_READ
 diff --git a/server/mailslot.c b/server/mailslot.c
-index 37f8f1a..f89778b 100644
+index 37f8f1a679c..f89778b924e 100644
 --- a/server/mailslot.c
 +++ b/server/mailslot.c
 @@ -95,6 +95,7 @@ static const struct object_ops mailslot_ops =
@@ -564,7 +564,7 @@ index 37f8f1a..f89778b 100644
      mailslot_device_file_destroy            /* destroy */
  };
 diff --git a/server/mapping.c b/server/mapping.c
-index 9451a89..d43690a 100644
+index 9451a89dba0..d43690adfca 100644
 --- a/server/mapping.c
 +++ b/server/mapping.c
 @@ -82,6 +82,7 @@ static const struct object_ops ranges_ops =
@@ -592,7 +592,7 @@ index 9451a89..d43690a 100644
      mapping_destroy              /* destroy */
  };
 diff --git a/server/mutex.c b/server/mutex.c
-index 2503d12..58ac83b 100644
+index 2503d12057f..58ac83bd3f7 100644
 --- a/server/mutex.c
 +++ b/server/mutex.c
 @@ -87,6 +87,7 @@ static const struct object_ops mutex_ops =
@@ -604,7 +604,7 @@ index 2503d12..58ac83b 100644
      mutex_destroy              /* destroy */
  };
 diff --git a/server/named_pipe.c b/server/named_pipe.c
-index 2beb590..ad0c9f5 100644
+index 2beb590c2cc..ad0c9f549a6 100644
 --- a/server/named_pipe.c
 +++ b/server/named_pipe.c
 @@ -136,6 +136,7 @@ static const struct object_ops named_pipe_ops =
@@ -656,7 +656,7 @@ index 2beb590..ad0c9f5 100644
      named_pipe_dir_destroy                   /* destroy */
  };
 diff --git a/server/object.c b/server/object.c
-index 0fc9aef..6a526c6 100644
+index 0fc9aef451a..6a526c6cd36 100644
 --- a/server/object.c
 +++ b/server/object.c
 @@ -122,6 +122,7 @@ static const struct object_ops apc_reserve_ops =
@@ -688,7 +688,7 @@ index 0fc9aef..6a526c6 100644
  {
      return map_access( access, &obj->ops->type->mapping );
 diff --git a/server/object.h b/server/object.h
-index fb3f321..e212ec7 100644
+index fb3f3211fae..e212ec75a0d 100644
 --- a/server/object.h
 +++ b/server/object.h
 @@ -42,6 +42,7 @@ struct async;
@@ -720,7 +720,7 @@ index fb3f321..e212ec7 100644
  
  int get_serial_async_timeout(struct object *obj, int type, int count);
 diff --git a/server/process.c b/server/process.c
-index 0d54465..8faf3ae 100644
+index 0d5446517b4..8faf3ae754d 100644
 --- a/server/process.c
 +++ b/server/process.c
 @@ -124,6 +124,7 @@ static const struct object_ops process_ops =
@@ -748,7 +748,7 @@ index 0d54465..8faf3ae 100644
      job_destroy                    /* destroy */
  };
 diff --git a/server/protocol.def b/server/protocol.def
-index 6a48db6..2a90837 100644
+index 6a48db65749..2a90837992e 100644
 --- a/server/protocol.def
 +++ b/server/protocol.def
 @@ -4256,6 +4256,18 @@ enum fsync_type
@@ -771,7 +771,7 @@ index 6a48db6..2a90837 100644
  @REQ(get_linux_sync_device)
  @END
 diff --git a/server/queue.c b/server/queue.c
-index 8e37d6b..20d8c2d 100644
+index 8e37d6b0aad..20d8c2d959c 100644
 --- a/server/queue.c
 +++ b/server/queue.c
 @@ -197,6 +197,7 @@ static const struct object_ops msg_queue_ops =
@@ -791,7 +791,7 @@ index 8e37d6b..20d8c2d 100644
      thread_input_destroy          /* destroy */
  };
 diff --git a/server/registry.c b/server/registry.c
-index 4c68344..f1d368c 100644
+index 4c683440fea..f1d368ce946 100644
 --- a/server/registry.c
 +++ b/server/registry.c
 @@ -195,6 +195,7 @@ static const struct object_ops key_ops =
@@ -803,7 +803,7 @@ index 4c68344..f1d368c 100644
      key_destroy              /* destroy */
  };
 diff --git a/server/request.c b/server/request.c
-index ffaa053..b9c2337 100644
+index ffaa053408b..b9c23370974 100644
 --- a/server/request.c
 +++ b/server/request.c
 @@ -103,6 +103,7 @@ static const struct object_ops master_socket_ops =
@@ -815,7 +815,7 @@ index ffaa053..b9c2337 100644
      master_socket_destroy          /* destroy */
  };
 diff --git a/server/semaphore.c b/server/semaphore.c
-index d354892..567a922 100644
+index d354892c224..567a922c0ac 100644
 --- a/server/semaphore.c
 +++ b/server/semaphore.c
 @@ -84,6 +84,7 @@ static const struct object_ops semaphore_ops =
@@ -827,7 +827,7 @@ index d354892..567a922 100644
      no_destroy                     /* destroy */
  };
 diff --git a/server/serial.c b/server/serial.c
-index 2d9b2cd..93619eb 100644
+index 2d9b2cd5318..93619ebccde 100644
 --- a/server/serial.c
 +++ b/server/serial.c
 @@ -105,6 +105,7 @@ static const struct object_ops serial_ops =
@@ -839,7 +839,7 @@ index 2d9b2cd..93619eb 100644
      serial_destroy                /* destroy */
  };
 diff --git a/server/signal.c b/server/signal.c
-index 802b7f9..2f58105 100644
+index 802b7f936b9..2f58105452f 100644
 --- a/server/signal.c
 +++ b/server/signal.c
 @@ -76,6 +76,7 @@ static const struct object_ops handler_ops =
@@ -851,7 +851,7 @@ index 802b7f9..2f58105 100644
      handler_destroy           /* destroy */
  };
 diff --git a/server/sock.c b/server/sock.c
-index 73409c5..9772866 100644
+index 73409c5a1df..977286615dc 100644
 --- a/server/sock.c
 +++ b/server/sock.c
 @@ -485,6 +485,7 @@ static const struct object_ops sock_ops =
@@ -879,7 +879,7 @@ index 73409c5..9772866 100644
      no_destroy                  /* destroy */
  };
 diff --git a/server/symlink.c b/server/symlink.c
-index 27a90d9..5a3f350 100644
+index 27a90d91dff..5a3f35054a2 100644
 --- a/server/symlink.c
 +++ b/server/symlink.c
 @@ -85,6 +85,7 @@ static const struct object_ops symlink_ops =
@@ -891,7 +891,7 @@ index 27a90d9..5a3f350 100644
      symlink_destroy               /* destroy */
  };
 diff --git a/server/thread.c b/server/thread.c
-index cdb0549..4dce102 100644
+index cdb0549f873..4dce10259b4 100644
 --- a/server/thread.c
 +++ b/server/thread.c
 @@ -115,6 +115,7 @@ static const struct object_ops thread_apc_ops =
@@ -919,7 +919,7 @@ index cdb0549..4dce102 100644
      destroy_thread              /* destroy */
  };
 diff --git a/server/timer.c b/server/timer.c
-index 53286db..ca367a6 100644
+index 53286dbc56c..ca367a6fb7d 100644
 --- a/server/timer.c
 +++ b/server/timer.c
 @@ -96,6 +96,7 @@ static const struct object_ops timer_ops =
@@ -931,7 +931,7 @@ index 53286db..ca367a6 100644
      timer_destroy              /* destroy */
  };
 diff --git a/server/token.c b/server/token.c
-index 31fc4b8..16f74a3 100644
+index 31fc4b8ddc6..16f74a32cae 100644
 --- a/server/token.c
 +++ b/server/token.c
 @@ -164,6 +164,7 @@ static const struct object_ops token_ops =
@@ -943,7 +943,7 @@ index 31fc4b8..16f74a3 100644
      token_destroy              /* destroy */
  };
 diff --git a/server/window.c b/server/window.c
-index 3920eae..2891f65 100644
+index 3920eaeb4ec..2891f659894 100644
 --- a/server/window.c
 +++ b/server/window.c
 @@ -123,6 +123,7 @@ static const struct object_ops window_ops =
@@ -955,7 +955,7 @@ index 3920eae..2891f65 100644
      window_destroy            /* destroy */
  };
 diff --git a/server/winstation.c b/server/winstation.c
-index 8803d9b..ad4664e 100644
+index 8803d9bf619..ad4664e2b1e 100644
 --- a/server/winstation.c
 +++ b/server/winstation.c
 @@ -90,6 +90,7 @@ static const struct object_ops winstation_ops =
