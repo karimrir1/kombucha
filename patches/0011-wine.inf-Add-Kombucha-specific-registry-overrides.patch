@@ -1,15 +1,15 @@
-From dc3af4191f26d5a8058256c0bfc7001847f498a2 Mon Sep 17 00:00:00 2001
+From a4f1565b05450f80b6dd55e2ea4035ea714aea1d Mon Sep 17 00:00:00 2001
 From: effectsbot <eff3ctsb0t@gmail.com>
-Date: Sun, 8 Feb 2026 12:51:24 +0100
-Subject: [PATCH 17/17] wine.inf: Add Kombucha-specific registry overrides
+Date: Sun, 15 Feb 2026 12:18:00 +0100
+Subject: [PATCH 11/11] wine.inf: Add Kombucha-specific registry overrides
 
 Signed-off-by: effectsbot <eff3ctsb0t@gmail.com>
 ---
- loader/wine.inf.in | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ loader/wine.inf.in | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
 diff --git a/loader/wine.inf.in b/loader/wine.inf.in
-index da23557..651e3da 100644
+index 23bb51b..f7f6898 100644
 --- a/loader/wine.inf.in
 +++ b/loader/wine.inf.in
 @@ -63,6 +63,7 @@ AddReg=\
@@ -17,13 +17,53 @@ index da23557..651e3da 100644
      DirectX,\
      Fonts,\
 +    KombuchaOverrides,\
-     LicenseInformation,\
      MCI,\
      Misc,\
-@@ -1326,3 +1327,17 @@ InfFiles  = 17
+     OLE,\
+@@ -87,6 +88,7 @@ AddReg=\
+     Debugger,\
+     DirectX,\
+     Fonts,\
++    KombuchaOverrides,\
+     MCI,\
+     Misc,\
+     OLE,\
+@@ -114,6 +116,7 @@ AddReg=\
+     Debugger,\
+     DirectX,\
+     Fonts,\
++    KombuchaOverrides,\
+     MCI,\
+     Misc,\
+     OLE,\
+@@ -141,6 +144,7 @@ AddReg=\
+     Debugger,\
+     DirectX,\
+     Fonts,\
++    KombuchaOverrides,\
+     MCI,\
+     Misc,\
+     OLE,\
+@@ -164,6 +168,7 @@ AddReg=\
+     CurrentVersionWow64.ntx86,\
+     Debugger,\
+     DirectX,\
++    KombuchaOverrides,\
+     MCI,\
+     Misc,\
+     Packages.wow64,\
+@@ -182,6 +187,7 @@ AddReg=\
+     CurrentVersionWow64.ntarm,\
+     Debugger,\
+     DirectX,\
++    KombuchaOverrides,\
+     MCI,\
+     Misc,\
+     Tapi,\
+@@ -2866,3 +2872,17 @@ EtcFiles  = 12,etc
+ InfFiles  = 17
  NlsFiles  = 11
  SortFiles = 10,globalization\sorting
- WinmdFiles = 11,winmetadata
 +
 +[KombuchaOverrides]
 +;; Global overrides

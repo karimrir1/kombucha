@@ -1,26 +1,26 @@
-From 5aa3a71fd63e083c3d36e83cd5dd30d59f9976ad Mon Sep 17 00:00:00 2001
-From: sewn <sewn@disroot.org>
-Date: Fri, 26 Dec 2025 17:11:53 +0300
-Subject: [PATCH 16/17] wine.inf: Disable unused services
+From 040c65325631d3e5faac16919b60ffd8bc8e0c3e Mon Sep 17 00:00:00 2001
+From: effectsbot <eff3ctsb0t@gmail.com>
+Date: Sun, 15 Feb 2026 12:22:10 +0100
+Subject: [PATCH 10/11] wine.inf: Disable unused services
 
-Signed-off-by: sewn <sewn@disroot.org>
+Signed-off-by: effectsbot <eff3ctsb0t@gmail.com>
 ---
  loader/wine.inf.in | 3 ---
  1 file changed, 3 deletions(-)
 
 diff --git a/loader/wine.inf.in b/loader/wine.inf.in
-index 80a4a06..da23557 100644
+index 24a7cc5..23bb51b 100644
 --- a/loader/wine.inf.in
 +++ b/loader/wine.inf.in
-@@ -1099,7 +1099,6 @@ StartType=3
+@@ -2653,7 +2653,6 @@ StartType=3
  ErrorControl=1
  
  [Services]
 -HKLM,%CurrentVersion%\RunServices,"winemenubuilder",2,"%11%\winemenubuilder.exe -a -r"
- HKLM,"System\CurrentControlSet\Services\Dnscache\Parameters",,16
  HKLM,"System\CurrentControlSet\Services\Eventlog\Application",,16
  HKLM,"System\CurrentControlSet\Services\Eventlog\System","Sources",0x10000,""
-@@ -1219,10 +1218,8 @@ services,"@%11%\ws2_32.dll,-4"
+ HKLM,"System\CurrentControlSet\Services\Tcpip\Parameters","DataBasePath",,"%12%\etc"
+@@ -2773,10 +2772,8 @@ services,"@%11%\ws2_32.dll,-4"
  [InfFiles]
  input.inf,"@%12%\hidclass.sys,-1"
  mouhid.inf,"@%12%\mouhid.sys,-1"
