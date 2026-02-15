@@ -4,16 +4,12 @@ permissions:
   contents: write
   pull-requests: read
 env:
-  WINE_VERSION: "11.0"
+  WINE_VERSION: "proton"
+  WINE_COMMIT: "986bda11d3e569813ec0f86e56ef94d7c384da04"
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-    - name: Install dependencies
-      run: |
-        sudo wget -O /usr/include/linux/ntsync.h https://raw.githubusercontent.com/torvalds/linux/refs/tags/v6.18/include/uapi/linux/ntsync.h
-        sudo wget -O /usr/include/linux/userfaultfd.h https://raw.githubusercontent.com/torvalds/linux/refs/tags/v6.18/include/uapi/linux/userfaultfd.h
-
     - name: Checkout Repository
       uses: actions/checkout@v3
 
@@ -21,8 +17,8 @@ jobs:
       run: |
         echo "TAG=${{ env.WINE_VERSION }}+$(date --utc +%Y%m%d%H%M)" >> $GITHUB_ENV
 
-        git clone https://gitlab.winehq.org/wine/wine.git --depth 1 \
-          --branch wine-${{ env.WINE_VERSION }}
+        git clone https://github.com/ValveSoftware/wine.git --depth 1 \
+          --revision=${{ env.WINE_COMMIT }}
 
     - name: Apply patches
       run: |
@@ -86,6 +82,7 @@ jobs:
         export CFLAGS='-O2 -ftree-vectorize -pipe -march=x86-64-v2 -mpclmul -msse4.2 -floop-nest-optimize -fgraphite-identity'
         export x86_64_CFLAGS="$CFLAGS"
         mkdir -p ${{ env.INSTALL }}
+        ./autogen.sh
         ./configure \
           CC='ccache gcc' \
           x86_64_CC='ccache x86_64-w64-mingw32-gcc' \
@@ -94,6 +91,9 @@ jobs:
           --enable-archs=x86_64 \
           --prefix=${{ env.INSTALL }} \
           --with-mingw \
+          --without-ffmpeg \
+          --without-gstreamer \
+          --without-opencl \
           --without-oss
 
     - name: Build Wine
