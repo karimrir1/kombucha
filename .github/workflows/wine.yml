@@ -13,7 +13,7 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Fetch sources
+    - name: Fetch sources 
       run: |
         echo "TAG=${{ env.WINE_VERSION }}+$(date --utc +%Y%m%d%H%M)" >> $GITHUB_ENV
 
